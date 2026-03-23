@@ -1,0 +1,1875 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Presupuestador · Distribuidora de Pintura</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+–bg: #0f0f0f;
+–surface: #1a1a1a;
+–surface2: #222222;
+–border: #2e2e2e;
+–accent: #E8732A;
+–accent2: #c9601a;
+–text: #f0f0f0;
+–muted: #888;
+–danger: #e05555;
+–success: #4caf7d;
+–radius: 12px;
+}
+
+- { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+background: #0f0f0f;
+color-scheme: dark;
+}
+
+body {
+font-family: ‘DM Sans’, sans-serif;
+background: var(–bg);
+color: var(–text);
+min-height: 100vh;
+font-size: 15px;
+}
+
+/* ===== SCREENS ===== */
+.screen { display: none; min-height: 100vh; flex-direction: column; }
+.screen.active { display: flex; }
+
+/* ===== HEADER ===== */
+.header {
+background: var(–surface);
+border-bottom: 1px solid var(–border);
+padding: 14px 16px;
+display: flex;
+align-items: center;
+gap: 12px;
+position: sticky;
+top: 0;
+z-index: 100;
+}
+.header-title {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 22px;
+letter-spacing: 1px;
+color: var(–accent);
+flex: 1;
+}
+.header-sub { font-size: 11px; color: var(–muted); }
+.back-btn {
+background: none;
+border: none;
+color: var(–accent);
+font-size: 22px;
+cursor: pointer;
+padding: 4px;
+line-height: 1;
+}
+
+/* ===== BOTTOM NAV ===== */
+.bottom-nav {
+position: fixed;
+bottom: 0; left: 0; right: 0;
+background: var(–surface);
+border-top: 1px solid var(–border);
+display: flex;
+z-index: 200;
+}
+.nav-btn {
+flex: 1;
+background: none;
+border: none;
+color: var(–muted);
+padding: 10px 4px 12px;
+cursor: pointer;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 3px;
+font-family: ‘DM Sans’, sans-serif;
+font-size: 10px;
+transition: color .2s;
+}
+.nav-btn.active { color: var(–accent); }
+.nav-btn svg { width: 22px; height: 22px; }
+
+/* ===== CONTENT ===== */
+.content {
+flex: 1;
+padding: 16px;
+padding-bottom: 80px;
+overflow-y: auto;
+}
+
+/* ===== CARDS ===== */
+.card {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: var(–radius);
+padding: 14px;
+margin-bottom: 10px;
+}
+.card-title {
+font-size: 11px;
+text-transform: uppercase;
+letter-spacing: 1px;
+color: var(–muted);
+margin-bottom: 10px;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+border: none;
+border-radius: 8px;
+padding: 13px 20px;
+font-family: ‘DM Sans’, sans-serif;
+font-size: 15px;
+font-weight: 600;
+cursor: pointer;
+transition: opacity .15s, transform .1s;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+width: 100%;
+}
+.btn:active { transform: scale(.98); opacity: .85; }
+.btn-primary { background: var(–accent); color: #000; }
+.btn-secondary { background: var(–surface2); color: var(–text); border: 1px solid var(–border); }
+.btn-danger { background: var(–danger); color: #fff; }
+.btn-sm { padding: 8px 14px; font-size: 13px; width: auto; }
+.btn-icon { padding: 8px; width: auto; background: var(–surface2); border: 1px solid var(–border); border-radius: 8px; }
+
+/* ===== INPUTS ===== */
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 12px; color: var(–muted); margin-bottom: 5px; }
+.input {
+width: 100%;
+background: var(–surface2);
+border: 1px solid var(–border);
+border-radius: 8px;
+padding: 12px 14px;
+color: var(–text);
+font-family: ‘DM Sans’, sans-serif;
+font-size: 15px;
+outline: none;
+transition: border-color .2s;
+}
+.input:focus { border-color: var(–accent); }
+.input-row { display: flex; gap: 8px; }
+.input-row .field { flex: 1; }
+
+/* ===== HOME SCREEN ===== */
+.home-top {
+background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
+border-bottom: 1px solid var(–border);
+padding: 20px 16px 16px;
+display: flex;
+align-items: center;
+gap: 14px;
+}
+.home-logo {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 36px;
+color: var(–accent);
+line-height: 1;
+}
+.home-logo small { display: block; font-family: ‘DM Sans’, sans-serif; font-size: 11px; font-weight: 300; color: var(–muted); letter-spacing: 2px; text-transform: uppercase; }
+
+.new-quote-btn {
+background: var(–accent);
+color: #000;
+border: none;
+border-radius: var(–radius);
+padding: 18px 20px;
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 22px;
+letter-spacing: 1px;
+cursor: pointer;
+display: flex;
+align-items: center;
+gap: 12px;
+width: 100%;
+margin-bottom: 16px;
+transition: opacity .15s;
+}
+.new-quote-btn:active { opacity: .85; }
+.new-quote-btn .icon { font-size: 28px; }
+
+.quote-item {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: var(–radius);
+padding: 14px;
+margin-bottom: 8px;
+cursor: pointer;
+display: flex;
+align-items: center;
+gap: 12px;
+transition: border-color .2s;
+-webkit-tap-highlight-color: transparent;
+}
+.quote-item:active { border-color: var(–accent); }
+.quote-num {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 20px;
+color: var(–accent);
+min-width: 70px;
+}
+.quote-info { flex: 1; }
+.quote-client { font-weight: 600; font-size: 15px; }
+.quote-meta { font-size: 12px; color: var(–muted); margin-top: 2px; }
+.quote-total {
+font-weight: 600;
+font-size: 15px;
+color: var(–accent);
+text-align: right;
+white-space: nowrap;
+}
+
+.empty-state {
+text-align: center;
+padding: 50px 20px;
+color: var(–muted);
+}
+.empty-state .big { font-size: 48px; margin-bottom: 12px; }
+
+/* ===== EDITOR ===== */
+.quote-header-info {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: var(–radius);
+padding: 14px;
+margin-bottom: 12px;
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 8px;
+}
+.quote-num-display {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 28px;
+color: var(–accent);
+grid-column: 1/-1;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.quote-num-display input {
+background: none;
+border: none;
+color: var(–accent);
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 28px;
+width: 120px;
+outline: none;
+border-bottom: 1px dashed var(–accent);
+}
+.info-item { font-size: 13px; }
+.info-item span { color: var(–muted); font-size: 11px; display: block; }
+
+/* Search bar */
+.search-container { position: relative; margin-bottom: 10px; }
+.search-input {
+width: 100%;
+background: var(–surface2);
+border: 2px solid var(–accent);
+border-radius: 10px;
+padding: 13px 44px 13px 16px;
+color: var(–text);
+font-family: ‘DM Sans’, sans-serif;
+font-size: 15px;
+outline: none;
+}
+.search-input::placeholder { color: var(–muted); }
+.search-icon {
+position: absolute;
+right: 14px;
+top: 50%;
+transform: translateY(-50%);
+color: var(–accent);
+font-size: 18px;
+pointer-events: none;
+}
+
+/* Dropdown results */
+.search-results {
+position: absolute;
+top: 100%;
+left: 0; right: 0;
+background: var(–surface);
+border: 1px solid var(–accent);
+border-top: none;
+border-radius: 0 0 10px 10px;
+max-height: 260px;
+overflow-y: auto;
+z-index: 300;
+display: none;
+}
+.search-results.show { display: block; }
+.result-item {
+padding: 12px 16px;
+border-bottom: 1px solid var(–border);
+cursor: pointer;
+display: flex;
+justify-content: space-between;
+align-items: center;
+-webkit-tap-highlight-color: transparent;
+}
+.result-item:active { background: var(–surface2); }
+.result-item:last-child { border-bottom: none; }
+.result-name { font-size: 13px; flex: 1; padding-right: 10px; }
+.result-price { font-size: 13px; font-weight: 600; color: var(–accent); white-space: nowrap; }
+
+/* Items list */
+.item-row {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 10px;
+padding: 10px 12px;
+margin-bottom: 6px;
+position: relative;
+}
+.item-name {
+font-size: 13px;
+font-weight: 500;
+margin-bottom: 8px;
+padding-right: 28px;
+}
+.item-name.editable {
+background: none;
+border: none;
+border-bottom: 1px dashed var(–border);
+color: var(–text);
+font-family: ‘DM Sans’, sans-serif;
+font-size: 13px;
+font-weight: 500;
+width: 100%;
+outline: none;
+padding: 2px 28px 2px 0;
+display: block;
+margin-bottom: 8px;
+}
+.item-controls {
+display: flex;
+align-items: center;
+gap: 6px;
+}
+.qty-btn {
+width: 34px; height: 34px;
+background: var(–surface2);
+border: 1px solid var(–border);
+border-radius: 8px;
+color: var(–text);
+font-size: 18px;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+flex-shrink: 0;
+}
+.qty-display {
+background: var(–surface2);
+border: 1px solid var(–border);
+border-radius: 6px;
+padding: 6px 10px;
+font-size: 15px;
+font-weight: 600;
+min-width: 44px;
+text-align: center;
+color: var(–text);
+font-family: ‘DM Sans’, sans-serif;
+outline: none;
+width: 54px;
+}
+.item-price-area { flex: 1; }
+.price-label { font-size: 10px; color: var(–muted); }
+.item-price-input {
+background: none;
+border: none;
+border-bottom: 1px dashed var(–border);
+color: var(–accent);
+font-family: ‘DM Sans’, sans-serif;
+font-size: 14px;
+font-weight: 600;
+width: 100%;
+outline: none;
+padding: 2px 0;
+}
+.item-price-input:focus { border-bottom-color: var(–accent); }
+.item-total { font-weight: 700; font-size: 14px; color: var(–text); text-align: right; white-space: nowrap; }
+.delete-item {
+position: absolute;
+top: 8px; right: 8px;
+width: 24px; height: 24px;
+background: none;
+border: none;
+color: var(–danger);
+font-size: 18px;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 4px;
+}
+
+/* Summary */
+.summary-box {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: var(–radius);
+padding: 14px;
+margin-top: 12px;
+}
+.summary-row {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 6px 0;
+border-bottom: 1px solid var(–border);
+}
+.summary-row:last-child { border-bottom: none; }
+.summary-label { color: var(–muted); font-size: 13px; }
+.summary-val { font-weight: 600; font-size: 14px; }
+.summary-total .summary-label { color: var(–text); font-weight: 600; font-size: 15px; }
+.summary-total .summary-val { color: var(–accent); font-size: 18px; font-weight: 700; }
+
+.discount-row {
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.discount-input {
+background: var(–surface2);
+border: 1px solid var(–border);
+border-radius: 6px;
+padding: 6px 10px;
+color: var(–text);
+font-family: ‘DM Sans’, sans-serif;
+font-size: 13px;
+width: 70px;
+outline: none;
+text-align: center;
+}
+.discount-input:focus { border-color: var(–accent); }
+
+/* Client autocomplete */
+.client-suggestions {
+position: absolute;
+left: 0; right: 0;
+top: 100%;
+background: var(–surface);
+border: 1px solid var(–accent);
+border-top: none;
+border-radius: 0 0 8px 8px;
+z-index: 200;
+max-height: 180px;
+overflow-y: auto;
+display: none;
+}
+.client-suggestions.show { display: block; }
+.client-sug-item {
+padding: 10px 14px;
+cursor: pointer;
+border-bottom: 1px solid var(–border);
+font-size: 14px;
+}
+.client-sug-item:last-child { border-bottom: none; }
+.client-sug-item .sug-addr { font-size: 11px; color: var(–muted); }
+.client-sug-item:active { background: var(–surface2); }
+
+/* ===== CLIENTS SCREEN ===== */
+.client-card {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: var(–radius);
+padding: 14px;
+margin-bottom: 8px;
+display: flex;
+align-items: center;
+gap: 12px;
+}
+.client-avatar {
+width: 42px; height: 42px;
+background: var(–accent);
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 18px;
+color: #000;
+flex-shrink: 0;
+}
+.client-info { flex: 1; }
+.client-name { font-weight: 600; font-size: 15px; }
+.client-addr { font-size: 12px; color: var(–muted); margin-top: 2px; }
+.client-del {
+background: none;
+border: none;
+color: var(–danger);
+font-size: 20px;
+cursor: pointer;
+padding: 4px;
+}
+
+/* ===== PRICE LIST SCREEN ===== */
+.price-item {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 8px;
+padding: 12px 14px;
+margin-bottom: 6px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+.price-item-name { font-size: 13px; flex: 1; padding-right: 8px; }
+.price-item-price {
+background: none;
+border: none;
+border-bottom: 1px dashed var(–border);
+color: var(–accent);
+font-family: ‘DM Sans’, sans-serif;
+font-size: 14px;
+font-weight: 600;
+width: 100px;
+text-align: right;
+outline: none;
+padding: 2px 0;
+}
+.price-item-price:focus { border-bottom-color: var(–accent); }
+
+/* ===== PDF PRINT STYLES ===== */
+@media print {
+body { background: #fff; color: #000; }
+.screen { display: none !important; }
+#print-area { display: block !important; }
+.no-print { display: none !important; }
+}
+
+#print-area {
+display: none;
+padding: 20mm;
+font-family: Arial, sans-serif;
+font-size: 11pt;
+color: #000;
+}
+.print-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 14px; }
+.print-company { font-size: 22pt; font-weight: bold; }
+.print-company small { display: block; font-size: 9pt; font-weight: normal; color: #555; }
+.print-info { text-align: right; font-size: 10pt; }
+.print-info strong { font-size: 13pt; }
+.print-client { margin-bottom: 18px; padding: 10px 14px; background: #f5f5f5; border-left: 4px solid #c9a84c; }
+.print-client strong { font-size: 12pt; }
+.print-client p { font-size: 10pt; color: #555; margin-top: 2px; }
+table.print-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+.print-table th { background: #1a1a1a; color: #fff; padding: 8px 10px; text-align: left; font-size: 10pt; }
+.print-table th:last-child, .print-table td:last-child { text-align: right; }
+.print-table th:nth-child(1), .print-table td:nth-child(1) { width: 55px; text-align: center; }
+.print-table th:nth-child(3), .print-table td:nth-child(3) { width: 110px; text-align: right; }
+.print-table td { padding: 7px 10px; border-bottom: 1px solid #e0e0e0; font-size: 10pt; }
+.print-table tr:nth-child(even) td { background: #fafafa; }
+.print-totals { margin-left: auto; width: 220px; }
+.print-totals table { width: 100%; border-collapse: collapse; }
+.print-totals td { padding: 5px 8px; font-size: 10pt; }
+.print-totals tr:last-child td { font-size: 13pt; font-weight: bold; border-top: 2px solid #000; padding-top: 8px; }
+.print-totals td:last-child { text-align: right; }
+.print-footer { margin-top: 30px; border-top: 1px solid #ccc; padding-top: 10px; font-size: 9pt; color: #888; text-align: center; }
+
+/* Toast */
+.toast {
+position: fixed;
+bottom: 90px;
+left: 50%; transform: translateX(-50%);
+background: var(–success);
+color: #fff;
+padding: 10px 20px;
+border-radius: 20px;
+font-size: 14px;
+font-weight: 600;
+z-index: 9999;
+opacity: 0;
+transition: opacity .3s;
+pointer-events: none;
+white-space: nowrap;
+}
+.toast.show { opacity: 1; }
+
+/* Modal */
+.modal-overlay {
+position: fixed; inset: 0;
+background: rgba(0,0,0,.75);
+z-index: 500;
+display: none;
+align-items: flex-end;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+background: var(–surface);
+border-radius: 16px 16px 0 0;
+padding: 20px 16px 32px;
+width: 100%;
+max-height: 85vh;
+overflow-y: auto;
+}
+.modal-title {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 22px;
+color: var(–accent);
+margin-bottom: 16px;
+}
+
+/* Upload area */
+.upload-area {
+border: 2px dashed var(–border);
+border-radius: 10px;
+padding: 30px 20px;
+text-align: center;
+cursor: pointer;
+transition: border-color .2s;
+}
+.upload-area:active { border-color: var(–accent); }
+.upload-area .upload-icon { font-size: 36px; margin-bottom: 8px; }
+.upload-area p { color: var(–muted); font-size: 13px; }
+
+.tag { display: inline-block; background: var(–surface2); border: 1px solid var(–border); border-radius: 4px; padding: 2px 7px; font-size: 11px; color: var(–muted); }
+
+/* Add manual product */
+.add-manual-btn {
+background: none;
+border: 1px dashed var(–border);
+border-radius: 8px;
+color: var(–muted);
+font-size: 13px;
+padding: 10px;
+width: 100%;
+cursor: pointer;
+text-align: center;
+margin-bottom: 6px;
+}
+.add-manual-btn:active { border-color: var(–accent); color: var(–accent); }
+
+.section-divider {
+font-size: 11px;
+text-transform: uppercase;
+letter-spacing: 1px;
+color: var(–muted);
+margin: 14px 0 8px;
+}
+
+.obs-input {
+width: 100%;
+background: var(–surface2);
+border: 1px solid var(–border);
+border-radius: 8px;
+padding: 10px 12px;
+color: var(–text);
+font-family: ‘DM Sans’, sans-serif;
+font-size: 14px;
+outline: none;
+resize: none;
+min-height: 60px;
+}
+.obs-input:focus { border-color: var(–accent); }
+
+/* ===== YEAR / MONTH GROUPS ===== */
+.year-group { margin-bottom: 6px; }
+.year-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+background: var(–accent);
+color: #000;
+border-radius: 10px;
+padding: 10px 14px;
+cursor: pointer;
+-webkit-tap-highlight-color: transparent;
+user-select: none;
+}
+.year-label { font-family: ‘Bebas Neue’, sans-serif; font-size: 20px; margin-right: 8px; }
+.year-count { font-size: 11px; opacity: .7; }
+.year-total { font-weight: 700; font-size: 14px; }
+.toggle-icon { font-size: 14px; transition: transform .2s; }
+.year-body { padding: 4px 0 2px 0; }
+
+.month-group { margin-bottom: 4px; }
+.month-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+background: var(–surface2);
+border: 1px solid var(–border);
+border-radius: 8px;
+padding: 8px 14px;
+cursor: pointer;
+-webkit-tap-highlight-color: transparent;
+user-select: none;
+margin-bottom: 4px;
+}
+.month-label { font-weight: 600; font-size: 13px; margin-right: 8px; color: var(–text); }
+.month-total { font-size: 13px; font-weight: 600; color: var(–accent); }
+.month-body { padding-left: 6px; }
+
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+
+<div class="toast" id="toast"></div>
+
+<!-- PRINT AREA (hidden, only shown on print) -->
+
+<div id="print-area"></div>
+
+<!-- BOTTOM NAV -->
+
+<nav class="bottom-nav" id="bottomNav">
+  <button class="nav-btn active" onclick="showScreen('home')" id="nav-home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+    Inicio
+  </button>
+  <button class="nav-btn" onclick="showScreen('clients')" id="nav-clients">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+    Clientes
+  </button>
+  <button class="nav-btn" onclick="showScreen('prices')" id="nav-prices">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"/></svg>
+    Precios
+  </button>
+</nav>
+
+<!-- ============================================================ -->
+
+<!-- HOME SCREEN -->
+
+<!-- ============================================================ -->
+
+<div class="screen active" id="screen-home">
+  <div class="home-top">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="54" height="54" style="flex-shrink:0;border-radius:50%">
+      <circle cx="200" cy="200" r="190" fill="#3a3a3a"/>
+      <polyline points="110,185 200,105 290,185" fill="none" stroke="#E8732A" stroke-width="22" stroke-linejoin="round" stroke-linecap="round"/>
+      <line x1="127" y1="178" x2="127" y2="248" stroke="#E8732A" stroke-width="22" stroke-linecap="round"/>
+      <line x1="273" y1="178" x2="273" y2="248" stroke="#E8732A" stroke-width="22" stroke-linecap="round"/>
+      <text x="200" y="295" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="46" fill="white" text-anchor="middle">CASA DON</text>
+      <text x="200" y="345" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="52" fill="#E8732A" text-anchor="middle">PINTO</text>
+    </svg>
+    <div>
+      <div class="home-logo">Casa Don Pinto<small>Presupuestos · Distribuidora de Pintura</small></div>
+      <div id="syncStatus" style="font-size:11px;color:var(--muted);margin-top:2px">⏳ Conectando...</div>
+    </div>
+  </div>
+  <div class="content">
+    <button class="new-quote-btn" onclick="newQuote()">
+      <span class="icon">＋</span> NUEVO PRESUPUESTO
+    </button>
+    <div style="position:relative;margin-bottom:4px">
+      <input class="input" type="text" id="homeSearch" placeholder="🔍 Buscar por cliente, N° o dirección..." oninput="renderQuotesList()" autocomplete="off" style="padding-right:36px">
+      <span id="homeSearchClear" onclick="clearHomeSearch()" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:18px;cursor:pointer">✕</span>
+    </div>
+    <div id="quotesList"></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+
+<!-- EDITOR SCREEN -->
+
+<!-- ============================================================ -->
+
+<div class="screen" id="screen-editor">
+  <div class="header">
+    <button class="back-btn" onclick="saveAndGoHome()">←</button>
+    <div>
+      <div class="header-title">Presupuesto</div>
+      <div class="header-sub" id="editor-subtitle">Nuevo</div>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="printQuote()">🖨 PDF</button>
+  </div>
+  <div class="content">
+    <!-- Quote meta -->
+    <div class="quote-header-info">
+      <div class="quote-num-display">
+        N° <input type="text" id="quoteNumber" value="" />
+      </div>
+      <div class="info-item"><span>Fecha</span><span id="quoteDate" style="font-size:13px;color:var(--text)"></span></div>
+      <div class="info-item"><span>Lista</span><span style="font-size:13px;color:var(--text)">LP 270</span></div>
+    </div>
+
+```
+<!-- Client -->
+<div class="card">
+  <div class="card-title">Cliente</div>
+  <div style="position:relative">
+    <div class="field">
+      <label>Nombre / Razón Social</label>
+      <input class="input" id="clientName" type="text" placeholder="Ej: García, Juan" autocomplete="off" oninput="filterClients()" onfocus="filterClients()">
+      <div class="client-suggestions" id="clientSuggestions"></div>
+    </div>
+  </div>
+  <div class="field">
+    <label>Dirección</label>
+    <input class="input" id="clientAddr" type="text" placeholder="Ej: Av. Mitre 1234">
+  </div>
+</div>
+
+<!-- Products -->
+<div class="section-divider">Productos</div>
+<div class="search-container" id="searchContainer">
+  <input class="search-input" id="productSearch" type="text" placeholder="🔍 Buscar producto..." autocomplete="off" oninput="searchProducts()" onfocus="searchProducts()">
+  <div class="search-results" id="searchResults"></div>
+</div>
+<button class="add-manual-btn" onclick="addManualProduct()">+ Agregar producto sin precio (manual)</button>
+
+<div id="itemsList"></div>
+
+<!-- Observations -->
+<div class="section-divider">Observaciones</div>
+<textarea class="obs-input" id="quoteObs" placeholder="Condiciones de pago, notas, vigencia del presupuesto..."></textarea>
+
+<!-- Summary -->
+<div class="summary-box">
+  <div class="summary-row">
+    <span class="summary-label">Subtotal</span>
+    <span class="summary-val" id="summarySubtotal">$0,00</span>
+  </div>
+  <div class="summary-row">
+    <span class="summary-label">Descuento</span>
+    <div class="discount-row">
+      <input class="discount-input" id="discountPct" type="number" value="0" min="0" max="100" placeholder="0" oninput="updateSummary()">
+      <span style="color:var(--muted); font-size:13px">%</span>
+      <span class="summary-val" id="summaryDiscount" style="color:var(--danger)">-$0,00</span>
+    </div>
+  </div>
+  <div class="summary-row summary-total">
+    <span class="summary-label">TOTAL</span>
+    <span class="summary-val" id="summaryTotal">$0,00</span>
+  </div>
+</div>
+
+<div style="height:16px"></div>
+<button class="btn btn-primary" onclick="saveAndGoHome()">💾 Guardar presupuesto</button>
+<div style="height:8px"></div>
+<button class="btn btn-danger" onclick="deleteCurrentQuote()" id="deleteQuoteBtn" style="display:none">🗑 Eliminar presupuesto</button>
+```
+
+  </div>
+</div>
+
+<!-- ============================================================ -->
+
+<!-- CLIENTS SCREEN -->
+
+<!-- ============================================================ -->
+
+<div class="screen" id="screen-clients">
+  <div class="header">
+    <div class="header-title">Clientes</div>
+    <button class="btn btn-primary btn-sm" onclick="showAddClientModal()">+ Agregar</button>
+  </div>
+  <div class="content">
+    <div class="field">
+      <input class="input" type="text" id="clientSearch" placeholder="🔍 Buscar cliente..." oninput="renderClients()">
+    </div>
+    <div id="clientsList"></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+
+<!-- PRICES SCREEN -->
+
+<!-- ============================================================ -->
+
+<div class="screen" id="screen-prices">
+  <div class="header">
+    <div class="header-title">Lista de Precios</div>
+    <button class="btn btn-secondary btn-sm" onclick="showUploadModal()">↑ Actualizar</button>
+  </div>
+  <div class="content">
+    <div class="field">
+      <input class="input" type="text" id="priceSearch" placeholder="🔍 Buscar en la lista..." oninput="renderPriceList()">
+    </div>
+    <div id="priceList"></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+
+<!-- MODALS -->
+
+<!-- ============================================================ -->
+
+<!-- Add client modal -->
+
+<div class="modal-overlay" id="addClientModal">
+  <div class="modal">
+    <div class="modal-title">Nuevo Cliente</div>
+    <div class="field"><label>Nombre / Razón Social *</label><input class="input" id="newClientName" type="text" placeholder="Ej: García, Juan"></div>
+    <div class="field"><label>Dirección</label><input class="input" id="newClientAddr" type="text" placeholder="Ej: Av. Mitre 1234, Buenos Aires"></div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn btn-secondary" onclick="closeModal('addClientModal')" style="flex:1">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveNewClient()" style="flex:2">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Upload modal -->
+
+<div class="modal-overlay" id="uploadModal">
+  <div class="modal">
+    <div class="modal-title">Actualizar Lista de Precios</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Subí el Excel con las columnas PRODUCTO y PRECIO (hoja "PRODUCTOS"). Los precios existentes se reemplazarán.</p>
+    <div class="upload-area" onclick="document.getElementById('xlsxUpload').click()">
+      <div class="upload-icon">📄</div>
+      <p>Tocá para seleccionar el archivo .xlsx</p>
+      <p style="margin-top:4px"><span class="tag">PRODUCTOS</span> hoja con columnas PRODUCTO / PRECIO</p>
+    </div>
+    <input type="file" id="xlsxUpload" accept=".xlsx,.xls" style="display:none" onchange="handleXlsxUpload(this)">
+    <div id="uploadStatus" style="margin-top:12px;font-size:13px;color:var(--success);display:none"></div>
+    <div style="margin-top:16px">
+      <button class="btn btn-secondary" onclick="closeModal('uploadModal')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<!-- Firebase -->
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAW_fJ86V02Vo5ZbbzOg_ogJOLEKtoACH8",
+  authDomain: "casa-don-pinto.firebaseapp.com",
+  projectId: "casa-don-pinto",
+  storageBucket: "casa-don-pinto.firebasestorage.app",
+  messagingSenderId: "506065143966",
+  appId: "1:506065143966:web:b0487d65b776b0f6c9138f"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
+
+// Expose db and Firebase functions globally so non-module script can use them
+window._db = db;
+window._fbDoc = doc;
+window._fbGetDoc = getDoc;
+window._fbSetDoc = setDoc;
+window._fbOnSnapshot = onSnapshot;
+window._fbCollection = collection;
+window._fbGetDocs = getDocs;
+window._firebaseReady = false;
+
+// Start listeners once DB is ready
+window.addEventListener('load', () => {
+  window._firebaseReady = true;
+  window.initFirebaseListeners && window.initFirebaseListeners();
+});
+</script>
+
+<script>
+// ============================================================
+// EMBEDDED PRODUCT DATA (LP 270)
+// ============================================================
+const EMBEDDED_PRODUCTS = [{"producto":"SINTETICO AMARILLO X 1/4 LT","precio":2874.92},{"producto":"SINTETICO AMARILLO MEDIO X 1/4 LT","precio":2874.92},{"producto":"SINTETICO BERMELLON X 1/4 LT","precio":2874.92},{"producto":"SINTETICO BLANCO BRILLANTE X 1/4 LT","precio":2874.92},{"producto":"SINTETICO NARANJA X 1/4 LT","precio":2874.92},{"producto":"SINTETICO VIOLETA X 1/4 LT","precio":2874.92},{"producto":"SINTETICO CARMIN X 1/4 LT","precio":2874.92},{"producto":"SINTETICO AMARILLO X 1/2 LT","precio":4439.77},{"producto":"SINTETICO AMARILLO MEDIO X 1/2 LT","precio":4439.77},{"producto":"SINTETICO BERMELLON X 1/2 LT","precio":4439.77},{"producto":"SINTETICO BLANCO BRILLANTE X 1/2 LT","precio":4439.77},{"producto":"SINTETICO NARANJA X 1/2 LT","precio":4439.77},{"producto":"SINTETICO VIOLETA X 1/2 LT","precio":4439.77},{"producto":"SINTETICO CARMIN X 1/2 LT","precio":4439.77},{"producto":"SINTETICO AMARILLO X 1 LT","precio":7625.73},{"producto":"SINTETICO AMARILLO MEDIO X 1 LT","precio":7625.73},{"producto":"SINTETICO BERMELLON X 1 LT","precio":7625.73},{"producto":"SINTETICO BLANCO BRILLANTE X 1 LT","precio":7625.73},{"producto":"SINTETICO NARANJA X 1 LT","precio":7625.73},{"producto":"SINTETICO VIOLETA X 1 LT","precio":7625.73},{"producto":"SINTETICO CARMIN X 1 LT","precio":7625.73},{"producto":"SINTETICO AMARILLO X 4 LTS","precio":30328.49},{"producto":"SINTETICO AMARILLO MEDIO X 4 LTS","precio":30328.49},{"producto":"SINTETICO BERMELLON X 4 LTS","precio":30328.49},{"producto":"SINTETICO BLANCO BRILLANTE X 4 LTS","precio":30328.49},{"producto":"SINTETICO NARANJA X 4 LTS","precio":30328.49},{"producto":"SINTETICO VIOLETA X 4 LTS","precio":30328.49},{"producto":"SINTETICO CARMIN X 4 LTS","precio":30328.49},{"producto":"SINTETICO AMARILLO X 20 LTS","precio":135270.96},{"producto":"SINTETICO AMARILLO MEDIO X 20 LTS","precio":135270.96},{"producto":"SINTETICO BERMELLON X 20 LTS","precio":135270.96},{"producto":"SINTETICO BLANCO BRILLANTE X 20 LTS","precio":135270.96},{"producto":"SINTETICO NARANJA X 20 LTS","precio":135270.96},{"producto":"SINTETICO VIOLETA X 20 LTS","precio":135270.96},{"producto":"SINTETICO CARMIN X 20 LTS","precio":135270.96},{"producto":"SINTETICO AZUL MARINO X 1/4 LT","precio":2492.82},{"producto":"SINTETICO AZUL TRAFUL X 1/4 LT","precio":2492.82},{"producto":"SINTETICO AZULEJO X 1/4 LT","precio":2492.82},{"producto":"SINTETICO CREMA X 1/4 LT","precio":2492.82},{"producto":"SINTETICO GRIS HIELO X 1/4 LT","precio":2492.82},{"producto":"SINTETICO GRIS VISION X 1/4 LT","precio":2492.82},{"producto":"SINTETICO MARFIL X 1/4 LT","precio":2492.82},{"producto":"SINTETICO MARFIL CHAMPAGNE X 1/4 LT","precio":2492.82},{"producto":"SINTETICO MARFIL SEDA X 1/4 LT","precio":2492.82},{"producto":"SINTETICO OCRE X 1/4 LT","precio":2492.82},{"producto":"SINTETICO VERDE CLARO X 1/4 LT","precio":2492.82},{"producto":"SINTETICO VERDE ESMERALDA X 1/4 LT","precio":2492.82},{"producto":"SINTETICO VERDE ILUSION X 1/4 LT","precio":2492.82},{"producto":"SINTETICO VERDE INGLES X 1/4 LT","precio":2492.82},{"producto":"SINTETICO VERDE NOCHE X 1/4 LT","precio":2492.82},{"producto":"SINTETICO VICUÑA X 1/4 LT","precio":2492.82},{"producto":"SINTETICO AZUL MARINO X 1/2 LT","precio":3804.49},{"producto":"SINTETICO AZUL TRAFUL X 1/2 LT","precio":3804.49},{"producto":"SINTETICO AZULEJO X 1/2 LT","precio":3804.49},{"producto":"SINTETICO CREMA X 1/2 LT","precio":3804.49},{"producto":"SINTETICO GRIS HIELO X 1/2 LT","precio":3804.49},{"producto":"SINTETICO GRIS VISION X 1/2 LT","precio":3804.49},{"producto":"SINTETICO MARFIL X 1/2 LT","precio":3804.49},{"producto":"SINTETICO MARFIL CHAMPAGNE X 1/2 LT","precio":3804.49},{"producto":"SINTETICO MARFIL SEDA X 1/2 LT","precio":3804.49},{"producto":"SINTETICO OCRE X 1/2 LT","precio":3804.49},{"producto":"SINTETICO VERDE CLARO X 1/2 LT","precio":3804.49},{"producto":"SINTETICO VERDE ESMERALDA X 1/2 LT","precio":3804.49},{"producto":"SINTETICO VERDE ILUSION X 1/2 LT","precio":3804.49},{"producto":"SINTETICO VERDE INGLES X 1/2 LT","precio":3804.49},{"producto":"SINTETICO VERDE NOCHE X 1/2 LT","precio":3804.49},{"producto":"SINTETICO VICUÑA X 1/2 LT","precio":3804.49},{"producto":"SINTETICO AZUL MARINO X 1 LT","precio":6653.85},{"producto":"SINTETICO AZUL TRAFUL X 1 LT","precio":6653.85},{"producto":"SINTETICO AZULEJO X 1 LT","precio":6653.85},{"producto":"SINTETICO CREMA X 1 LT","precio":6653.85},{"producto":"SINTETICO GRIS HIELO X 1 LT","precio":6653.85},{"producto":"SINTETICO GRIS VISION X 1 LT","precio":6653.85},{"producto":"SINTETICO MARFIL X 1 LT","precio":6653.85},{"producto":"SINTETICO MARFIL CHAMPAGNE X 1 LT","precio":6653.85},{"producto":"SINTETICO MARFIL SEDA X 1 LT","precio":6653.85},{"producto":"SINTETICO OCRE X 1 LT","precio":6653.85},{"producto":"SINTETICO VERDE CLARO X 1 LT","precio":6653.85},{"producto":"SINTETICO VERDE ESMERALDA X 1 LT","precio":6653.85},{"producto":"SINTETICO VERDE ILUSION X 1 LT","precio":6653.85},{"producto":"SINTETICO VERDE INGLES X 1 LT","precio":6653.85},{"producto":"SINTETICO VERDE NOCHE X 1 LT","precio":6653.85},{"producto":"SINTETICO VICUÑA X 1 LT","precio":6653.85},{"producto":"SINTETICO AZUL MARINO X 4 LTS","precio":25383.93},{"producto":"SINTETICO AZUL TRAFUL X 4 LTS","precio":25383.93},{"producto":"SINTETICO AZULEJO X 4 LTS","precio":25383.93},{"producto":"SINTETICO CREMA X 4 LTS","precio":25383.93},{"producto":"SINTETICO GRIS HIELO X 4 LTS","precio":25383.93},{"producto":"SINTETICO GRIS VISION X 4 LTS","precio":25383.93},{"producto":"SINTETICO MARFIL X 4 LTS","precio":25383.93},{"producto":"SINTETICO MARFIL CHAMPAGNE X 4 LTS","precio":25383.93},{"producto":"SINTETICO MARFIL SEDA X 4 LTS","precio":25383.93},{"producto":"SINTETICO OCRE X 4 LTS","precio":25383.93},{"producto":"SINTETICO VERDE CLARO X 4 LTS","precio":25383.93},{"producto":"SINTETICO VERDE ESMERALDA X 4 LTS","precio":25383.93},{"producto":"SINTETICO VERDE ILUSION X 4 LTS","precio":25383.93},{"producto":"SINTETICO VERDE INGLES X 4 LTS","precio":25383.93},{"producto":"SINTETICO VERDE NOCHE X 4 LTS","precio":25383.93},{"producto":"SINTETICO VICUÑA X 4 LTS","precio":25383.93},{"producto":"SINTETICO AZUL MARINO X 20 LTS","precio":114893.6},{"producto":"SINTETICO AZUL TRAFUL X 20 LTS","precio":114893.6},{"producto":"SINTETICO AZULEJO X 20 LTS","precio":114893.6},{"producto":"SINTETICO CREMA X 20 LTS","precio":114893.6},{"producto":"SINTETICO GRIS HIELO X 20 LTS","precio":114893.6},{"producto":"SINTETICO GRIS VISION X 20 LTS","precio":114893.6},{"producto":"SINTETICO MARFIL X 20 LTS","precio":114893.6},{"producto":"SINTETICO MARFIL CHAMPAGNE X 20 LTS","precio":114893.6},{"producto":"SINTETICO MARFIL SEDA X 20 LTS","precio":114893.6},{"producto":"SINTETICO OCRE X 20 LTS","precio":114893.6},{"producto":"SINTETICO VERDE CLARO X 20 LTS","precio":114893.6},{"producto":"SINTETICO VERDE ESMERALDA X 20 LTS","precio":114893.6},{"producto":"SINTETICO VERDE ILUSION X 20 LTS","precio":114893.6},{"producto":"SINTETICO VERDE INGLES X 20 LTS","precio":114893.6},{"producto":"SINTETICO VERDE NOCHE X 20 LTS","precio":114893.6},{"producto":"SINTETICO VICUÑA X 20 LTS","precio":114893.6},{"producto":"SINTETICO BEIGE X 1/4 LT","precio":2254.99},{"producto":"SINTETICO CASTAÑO X 1/4 LT","precio":2254.99},{"producto":"SINTETICO CEDRO X 1/4 LT","precio":2254.99},{"producto":"SINTETICO CELESTE X 1/4 LT","precio":2254.99},{"producto":"SINTETICO GRIS ESPACIAL X 1/4 LT","precio":2254.99},{"producto":"SINTETICO GRIS OSCURO X 1/4 LT","precio":2254.99},{"producto":"SINTETICO GRIS PERLA X 1/4 LT","precio":2254.99},{"producto":"SINTETICO MARRON X 1/4 LT","precio":2254.99},{"producto":"SINTETICO NEGRO BRILLANTE X 1/4 LT","precio":2254.99},{"producto":"SINTETICO TABACO X 1/4 LT","precio":2254.99},{"producto":"SINTETICO BEIGE X 1/2 LT","precio":3503.87},{"producto":"SINTETICO CASTAÑO X 1/2 LT","precio":3503.87},{"producto":"SINTETICO CEDRO X 1/2 LT","precio":3503.87},{"producto":"SINTETICO CELESTE X 1/2 LT","precio":3503.87},{"producto":"SINTETICO GRIS ESPACIAL X 1/2 LT","precio":3503.87},{"producto":"SINTETICO GRIS OSCURO X 1/2 LT","precio":3503.87},{"producto":"SINTETICO GRIS PERLA X 1/2 LT","precio":3503.87},{"producto":"SINTETICO MARRON X 1/2 LT","precio":3503.87},{"producto":"SINTETICO NEGRO BRILLANTE X 1/2 LT","precio":3503.87},{"producto":"SINTETICO TABACO X 1/2 LT","precio":3503.87},{"producto":"SINTETICO BEIGE X 1 LT","precio":6075.98},{"producto":"SINTETICO CASTAÑO X 1 LT","precio":6075.98},{"producto":"SINTETICO CEDRO X 1 LT","precio":6075.98},{"producto":"SINTETICO CELESTE X 1 LT","precio":6075.98},{"producto":"SINTETICO GRIS ESPACIAL X 1 LT","precio":6075.98},{"producto":"SINTETICO GRIS OSCURO X 1 LT","precio":6075.98},{"producto":"SINTETICO GRIS PERLA X 1 LT","precio":6075.98},{"producto":"SINTETICO MARRON X 1 LT","precio":6075.98},{"producto":"SINTETICO NEGRO BRILLANTE X 1 LT","precio":6075.98},{"producto":"SINTETICO TABACO X 1 LT","precio":6075.98},{"producto":"SINTETICO BEIGE X 4 LTS","precio":21192.64},{"producto":"SINTETICO CASTAÑO X 4 LTS","precio":21192.64},{"producto":"SINTETICO CEDRO X 4 LTS","precio":21192.64},{"producto":"SINTETICO CELESTE X 4 LTS","precio":21192.64},{"producto":"SINTETICO GRIS ESPACIAL X 4 LTS","precio":21192.64},{"producto":"SINTETICO GRIS OSCURO X 4 LTS","precio":21192.64},{"producto":"SINTETICO GRIS PERLA X 4 LTS","precio":21192.64},{"producto":"SINTETICO MARRON X 4 LTS","precio":21192.64},{"producto":"SINTETICO NEGRO BRILLANTE X 4 LTS","precio":21192.64},{"producto":"SINTETICO TABACO X 4 LTS","precio":21192.64},{"producto":"SINTETICO BEIGE X 20 LTS","precio":101180.03},{"producto":"SINTETICO CASTAÑO X 20 LTS","precio":101180.03},{"producto":"SINTETICO CEDRO X 20 LTS","precio":101180.03},{"producto":"SINTETICO CELESTE X 20 LTS","precio":101180.03},{"producto":"SINTETICO GRIS ESPACIAL X 20 LTS","precio":101180.03},{"producto":"SINTETICO GRIS OSCURO X 20 LTS","precio":101180.03},{"producto":"SINTETICO GRIS PERLA X 20 LTS","precio":101180.03},{"producto":"SINTETICO MARRON X 20 LTS","precio":101180.03},{"producto":"SINTETICO NEGRO BRILLANTE X 20 LTS","precio":101180.03},{"producto":"SINTETICO TABACO X 20 LTS","precio":101180.03},{"producto":"SINTETICO ALUMINIO X 1/4 LT","precio":3334.35},{"producto":"SINTETICO ALUMINIO X 1/2 LT","precio":5835.13},{"producto":"SINTETICO ALUMINIO X 1 LT","precio":11114.54},{"producto":"SINTETICO ALUMINIO X 4 LTS","precio":43937.18},{"producto":"SINTETICO ALUMINIO X 20 LTS","precio":213028.69},{"producto":"SINTETICO ORO X 1/4 LT","precio":7177.78},{"producto":"SINTETICO ORO X 1/2 LT","precio":13425.47},{"producto":"SINTETICO ORO X 20 LTS","precio":482718.34},{"producto":"AEROSOL AMARILLO X 240 CC","precio":2853.72},{"producto":"AEROSOL AZUL MARINO X 240 CC","precio":2853.72},{"producto":"AEROSOL BERMELLON X 240 CC","precio":2853.72},{"producto":"AEROSOL BLANCO BRILLANTE X 240 CC","precio":2853.72},{"producto":"AEROSOL BLANCO MATE X 240 CC","precio":2853.72},{"producto":"AEROSOL BLANCO SATINADO X 240 CC","precio":2853.72},{"producto":"AEROSOL GRIS ESPACIAL X 240 CC","precio":2853.72},{"producto":"AEROSOL NEGRO BRILLANTE X 240 CC","precio":2853.72},{"producto":"AEROSOL NEGRO MATE X 240 CC","precio":2853.72},{"producto":"AEROSOL NEGRO SATINADO X 240 CC","precio":2853.72},{"producto":"AEROSOL VERDE INGLES X 240 CC","precio":2853.72},{"producto":"AEROSOL VIOLETA X 240 CC","precio":2853.72},{"producto":"AEROSOL GRIS OSCURO X 240 CC","precio":2853.72},{"producto":"AEROSOL ALUMINIO X 240 CC","precio":3100.52},{"producto":"AEROSOL PLATA X 240 CC","precio":3100.52},{"producto":"AEROSOL ORO X 240 CC","precio":3567.27},{"producto":"ANTIOXIDO AL CROMATO COLORADO X 1/4 LT","precio":2206.07},{"producto":"ANTIOXIDO AL CROMATO COLORADO X 1/2 LT","precio":3587.72},{"producto":"ANTIOXIDO AL CROMATO COLORADO X 1 LT","precio":5824.87},{"producto":"ANTIOXIDO AL CROMATO COLORADO X 4 LTS","precio":20567.94},{"producto":"ANTIOXIDO AL CROMATO COLORADO X 20 LTS","precio":95647.43},{"producto":"ANTIOXIDO AL CROMATO BLANCO X 1/4 LT","precio":2163.68},{"producto":"ANTIOXIDO AL CROMATO NEGRO X 1/4 LT","precio":2163.68},{"producto":"ANTIOXIDO AL CROMATO GRIS X 1/4 LT","precio":2163.68},{"producto":"ANTIOXIDO AL CROMATO AZUL X 1/4 LT","precio":2163.68},{"producto":"ANTIOXIDO AL CROMATO VERDE X 1/4 LT","precio":2163.68},{"producto":"ANTIOXIDO AL CROMATO BLANCO X 1/2 LT","precio":3579.56},{"producto":"ANTIOXIDO AL CROMATO NEGRO X 1/2 LT","precio":3579.56},{"producto":"ANTIOXIDO AL CROMATO GRIS X 1/2 LT","precio":3579.56},{"producto":"ANTIOXIDO AL CROMATO AZUL X 1/2 LT","precio":3579.56},{"producto":"ANTIOXIDO AL CROMATO VERDE X 1/2 LT","precio":3579.56},{"producto":"ANTIOXIDO AL CROMATO BLANCO X 1 LT","precio":6073.52},{"producto":"ANTIOXIDO AL CROMATO NEGRO X 1 LT","precio":6073.52},{"producto":"ANTIOXIDO AL CROMATO GRIS X 1 LT","precio":6073.52},{"producto":"ANTIOXIDO AL CROMATO AZUL X 1 LT","precio":6073.52},{"producto":"ANTIOXIDO AL CROMATO VERDE X 1 LT","precio":6073.52},{"producto":"ANTIOXIDO AL CROMATO BLANCO X 4 LTS","precio":21233.38},{"producto":"ANTIOXIDO AL CROMATO NEGRO X 4 LTS","precio":21233.38},{"producto":"ANTIOXIDO AL CROMATO GRIS X 4 LTS","precio":21233.38},{"producto":"ANTIOXIDO AL CROMATO AZUL X 4 LTS","precio":21233.38},{"producto":"ANTIOXIDO AL CROMATO VERDE X 4 LTS","precio":21233.38},{"producto":"ANTIOXIDO AL CROMATO BLANCO X 20 LTS","precio":100575.31},{"producto":"ANTIOXIDO AL CROMATO NEGRO X 20 LTS","precio":100575.31},{"producto":"ANTIOXIDO AL CROMATO GRIS X 20 LTS","precio":100575.31},{"producto":"ANTIOXIDO AL CROMATO AZUL X 20 LTS","precio":100575.31},{"producto":"ANTIOXIDO AL CROMATO VERDE X 20 LTS","precio":100575.31},{"producto":"ANTIOXIDO AL CROMATO ALUMINIO X 1/4 LT","precio":2889.78},{"producto":"ANTIOXIDO AL CROMATO ALUMINIO X 1/2 LT","precio":5057.12},{"producto":"ANTIOXIDO AL CROMATO ALUMINIO X 1 LT","precio":9632.6},{"producto":"ANTIOXIDO AL CROMATO ALUMINIO X 4 LTS","precio":39734.49},{"producto":"ANTIOXIDO AL CROMATO ALUMINIO X 20 LTS","precio":192652.03},{"producto":"ANTIOXIDO HERRERIA COLORADO X 1/4 LT","precio":2035.14},{"producto":"ANTIOXIDO HERRERIA COLORADO X 1/2 LT","precio":3244.67},{"producto":"ANTIOXIDO HERRERIA COLORADO X 1 LT","precio":4961.41},{"producto":"ANTIOXIDO HERRERIA COLORADO X 4 LTS","precio":17732.23},{"producto":"ANTIOXIDO HERRERIA COLORADO X 20 LTS","precio":84661.29},{"producto":"ANTIOXIDO HERRERIA NEGRO X 1/4 LT","precio":1872.51},{"producto":"ANTIOXIDO HERRERIA NEGRO X 1/2 LT","precio":3238.05},{"producto":"ANTIOXIDO HERRERIA NEGRO X 1 LT","precio":5382.17},{"producto":"ANTIOXIDO HERRERIA NEGRO X 4 LTS","precio":19232.39},{"producto":"ANTIOXIDO HERRERIA NEGRO X 20 LTS","precio":91826.6},{"producto":"FONDO BLANCO X 1/4 LT","precio":2227.89},{"producto":"FONDO BLANCO X 1/2 LT","precio":3659.73},{"producto":"FONDO BLANCO X 1 LT","precio":6102.8},{"producto":"FONDO BLANCO X 4 LTS","precio":21565.05},{"producto":"FONDO BLANCO X 20 LTS","precio":100943.83},{"producto":"AGUARRAS X 1 LT","precio":2448.49},{"producto":"AGUARRAS X 3.60 LTS","precio":8480.14},{"producto":"AGUARRAS X 18 LTS","precio":43595.06},{"producto":"THINNER X 1 LT","precio":3236.78},{"producto":"THINNER X 3.60 LTS","precio":12267.53},{"producto":"THINNER X 18 LTS","precio":57569.38},{"producto":"BARNIZ BRILLANTE X 1/4 LT","precio":2283.58},{"producto":"BARNIZ BRILLANTE X 1/2 LT","precio":3335.31},{"producto":"BARNIZ BRILLANTE X 1 LT","precio":5934.61},{"producto":"BARNIZ BRILLANTE X 4 LTS","precio":20660.04},{"producto":"BARNIZ BRILLANTE X 20 LTS","precio":98467.84},{"producto":"BARNIZ MARINO X 1/4 LT","precio":2520.91},{"producto":"BARNIZ MARINO X 1/2 LT","precio":3672.54},{"producto":"BARNIZ MARINO X 1 LT","precio":6462.34},{"producto":"BARNIZ MARINO X 4 LTS","precio":21882.33},{"producto":"BARNIZ MARINO X 20 LTS","precio":117338.37},{"producto":"BARNIZ SATINADO X 1/4 LT","precio":2783.16},{"producto":"BARNIZ SATINADO X 1/2 LT","precio":4568.7},{"producto":"BARNIZ SATINADO X 1 LT","precio":7691.86},{"producto":"BARNIZ SATINADO X 4 LTS","precio":27267.47},{"producto":"BARNIZ SATINADO X 20 LTS","precio":129866.79},{"producto":"BARNIZ MATE X 1/4 LT","precio":2786.85},{"producto":"BARNIZ MATE X 1/2 LT","precio":4603.92},{"producto":"BARNIZ MATE X 1 LT","precio":7791.69},{"producto":"BARNIZ MATE X 4 LTS","precio":27762.91},{"producto":"BARNIZ MATE X 20 LTS","precio":132468.75},{"producto":"ENDUIDO INTERIOR X 1/2 LT","precio":1886.05},{"producto":"ENDUIDO INTERIOR X 1 LT","precio":2639.63},{"producto":"ENDUIDO INTERIOR X 4 LTS","precio":7809.97},{"producto":"ENDUIDO INTERIOR X 10 LTS","precio":17887.25},{"producto":"ENDUIDO INTERIOR X 20 LTS","precio":33537.75},{"producto":"ENDUIDO EXTERIOR X 1 LT","precio":3315.02},{"producto":"ENDUIDO EXTERIOR X 4 LTS","precio":10230.7},{"producto":"ENDUIDO EXTERIOR X 10 LTS","precio":22766.46},{"producto":"ENDUIDO EXTERIOR X 20 LTS","precio":44581.37},{"producto":"LATEX LAVABLE INTERIOR X 1 LT","precio":5660.98},{"producto":"LATEX LAVABLE INTERIOR X 4 LTS","precio":20173.01},{"producto":"LATEX LAVABLE INTERIOR X 10 LTS","precio":47376.89},{"producto":"LATEX LAVABLE INTERIOR X 20 LTS","precio":89390.82},{"producto":"LATEX INT-EXT GOLD BLANCO X 1 LT","precio":4600.34},{"producto":"LATEX INT-EXT GOLD BLANCO X 4 LTS","precio":15351.7},{"producto":"LATEX INT-EXT GOLD BLANCO X 10 LTS","precio":36240.14},{"producto":"LATEX INT-EXT GOLD BLANCO X 20 LTS","precio":69155.12},{"producto":"LATEX INT-EXT GOLD VIOLETA X 1 LT","precio":4770.77},{"producto":"LATEX INT-EXT GOLD CANELA X 1 LT","precio":4770.77},{"producto":"LATEX INT-EXT GOLD GRIS ACERO X 1 LT","precio":4770.77},{"producto":"LATEX INT-EXT GOLD AMARILLO X 1 LT","precio":4770.77},{"producto":"LATEX INT-EXT GOLD VIOLETA X 4 LTS","precio":15308.88},{"producto":"LATEX INT-EXT GOLD CANELA X 4 LTS","precio":15308.88},{"producto":"LATEX INT-EXT GOLD GRIS ACERO X 4 LTS","precio":15308.88},{"producto":"LATEX INT-EXT GOLD AMARILLO X 4 LTS","precio":15308.88},{"producto":"LATEX INT-EXT GOLD VIOLETA X 10 LTS","precio":35260.62},{"producto":"LATEX INT-EXT GOLD CANELA X 10 LTS","precio":35260.62},{"producto":"LATEX INT-EXT GOLD GRIS ACERO X 10 LTS","precio":35260.62},{"producto":"LATEX INT-EXT GOLD AMARILLO X 10 LTS","precio":35260.62},{"producto":"LATEX INT-EXT GOLD VIOLETA X 20 LTS","precio":67207.12},{"producto":"LATEX INT-EXT GOLD CANELA X 20 LTS","precio":67207.12},{"producto":"LATEX INT-EXT GOLD GRIS ACERO X 20 LTS","precio":67207.12},{"producto":"LATEX INT-EXT GOLD AMARILLO X 20 LTS","precio":67207.12},{"producto":"LATEX INT-EXT PROFESIONAL X 1 LT","precio":3088.89},{"producto":"LATEX INT-EXT PROFESIONAL X 4 LTS","precio":9908.27},{"producto":"LATEX INT-EXT PROFESIONAL X 10 LTS","precio":23104.33},{"producto":"LATEX INT-EXT PROFESIONAL X 20 LTS","precio":44486.08},{"producto":"LATEX NF INTERIOR X 1 LT","precio":2128.6},{"producto":"LATEX NF INTERIOR X 4 LTS","precio":6091.72},{"producto":"LATEX NF INTERIOR X 10 LTS","precio":12942.34},{"producto":"LATEX NF INTERIOR X 20 LTS","precio":24481.13},{"producto":"LATEX P/ CIELORRASOS X 1 LT","precio":4310.58},{"producto":"LATEX P/ CIELORRASOS X 4 LTS","precio":13522.72},{"producto":"LATEX P/ CIELORRASOS X 10 LTS","precio":30752.33},{"producto":"LATEX P/ CIELORRASOS X 20 LTS","precio":60220.57},{"producto":"ULTRACAPA EN PASTA BLANCO X 4 KGS","precio":18498.9},{"producto":"ULTRACAPA EN PASTA VERDE CEMENTO X 4 KGS","precio":18498.9},{"producto":"ULTRACAPA EN PASTA NEGRO X 4 KGS","precio":18498.9},{"producto":"ULTRACAPA EN PASTA ROJO TEJA X 4 KGS","precio":18498.9},{"producto":"ULTRACAPA EN PASTA TRANSPARENTE X 4 KGS","precio":18498.9},{"producto":"ULTRACAPA EN PASTA GRIS ACERO X 4 KGS","precio":18498.9},{"producto":"HALO-CIDE LPU CURADOR X 1 LT","precio":4804.7},{"producto":"HALO-CIDE LPU CURADOR X 4 LTS","precio":15830.58},{"producto":"HALO-CIDE LPU CURADOR X 10 LTS","precio":32917.05},{"producto":"HALO-CIDE LACA HIDRO BRILLANTE X 1 LT","precio":19377.25},{"producto":"HALO-CIDE LACA HIDRO BRILLANTE X 4 LTS","precio":73633.59},{"producto":"MEMBRANA LIQUIDA BLANCO X 4 KGS","precio":13563.04},{"producto":"MEMBRANA LIQUIDA ROJO TEJA X 4 KGS","precio":13563.04},{"producto":"MEMBRANA LIQUIDA GRIS ACERO X 4 KGS","precio":13563.04},{"producto":"FIJADOR AL AGUA X 1 LT","precio":2331.62},{"producto":"FIJADOR AL AGUA X 4 LTS","precio":6910.78},{"producto":"FIJADOR AL AGUA X 10 LTS","precio":15244.64},{"producto":"FIJADOR AL AGUA X 20 LTS","precio":29033.75},{"producto":"FIJADOR AL AGUARRAS X 1 LT","precio":5577.71},{"producto":"FIJADOR AL AGUARRAS X 4 LTS","precio":19343.55}];
+
+// ============================================================
+// STATE
+// ============================================================
+let products = [];
+let quotes = [];
+let clients = [];
+let currentQuote = null;
+let currentQuoteId = null;
+let nextQuoteNum = 30011;
+let syncListeners = [];
+
+// ── Sync status indicator ──
+function setSyncStatus(status) {
+  // status: 'syncing' | 'ok' | 'offline' | 'error'
+  const el = document.getElementById('syncStatus');
+  if (!el) return;
+  const icons = { syncing:'⏳', ok:'☁️', offline:'📴', error:'⚠️' };
+  const labels = { syncing:'Sincronizando...', ok:'Sincronizado', offline:'Sin conexión', error:'Error al guardar' };
+  const colors = { syncing:'var(--muted)', ok:'var(--success)', offline:'var(--muted)', error:'var(--danger)' };
+  el.textContent = icons[status] + ' ' + labels[status];
+  el.style.color = colors[status];
+}
+
+// ── Firebase save ──
+async function save() {
+  // Always keep localStorage as fallback
+  try {
+    localStorage.setItem('quotes', JSON.stringify(quotes));
+    localStorage.setItem('clients', JSON.stringify(clients));
+    localStorage.setItem('nextQuoteNum', String(nextQuoteNum));
+    localStorage.setItem('products', JSON.stringify(products));
+  } catch(e) {}
+
+  if (!window._firebaseReady || !window._db) { setSyncStatus('offline'); return; }
+  setSyncStatus('syncing');
+  try {
+    const db = window._db;
+    const docFn = window._fbDoc;
+    const setFn = window._fbSetDoc;
+    await setFn(docFn(db, 'app', 'quotes'),    { data: JSON.stringify(quotes) });
+    await setFn(docFn(db, 'app', 'clients'),   { data: JSON.stringify(clients) });
+    await setFn(docFn(db, 'app', 'meta'),      { nextQuoteNum });
+    await setFn(docFn(db, 'app', 'products'),  { data: JSON.stringify(products) });
+    setSyncStatus('ok');
+  } catch(e) {
+    console.error('Firebase save error:', e);
+    setSyncStatus('error');
+  }
+}
+
+// ── Load from Firebase, fallback to localStorage ──
+async function loadState() {
+  // Load from localStorage immediately so app is usable right away
+  try {
+    const q = localStorage.getItem('quotes');
+    quotes = q ? JSON.parse(q) : [];
+    const c = localStorage.getItem('clients');
+    clients = c ? JSON.parse(c) : [];
+    const p = localStorage.getItem('products');
+    products = p ? JSON.parse(p) : [...EMBEDDED_PRODUCTS];
+    const n = localStorage.getItem('nextQuoteNum');
+    nextQuoteNum = n ? parseInt(n) : 30011;
+  } catch(e) {
+    quotes = []; clients = []; products = [...EMBEDDED_PRODUCTS]; nextQuoteNum = 30011;
+  }
+
+  // Then try to load from Firebase (overrides local if available)
+  if (!window._firebaseReady || !window._db) {
+    setSyncStatus('offline');
+    return;
+  }
+  setSyncStatus('syncing');
+  try {
+    const db = window._db;
+    const docFn = window._fbDoc;
+    const getFn = window._fbGetDoc;
+
+    const [qSnap, cSnap, pSnap, mSnap] = await Promise.all([
+      getFn(docFn(db, 'app', 'quotes')),
+      getFn(docFn(db, 'app', 'clients')),
+      getFn(docFn(db, 'app', 'products')),
+      getFn(docFn(db, 'app', 'meta')),
+    ]);
+
+    if (qSnap.exists()) quotes   = JSON.parse(qSnap.data().data || '[]');
+    if (cSnap.exists()) clients  = JSON.parse(cSnap.data().data || '[]');
+    if (pSnap.exists()) products = JSON.parse(pSnap.data().data || '[]');
+    if (mSnap.exists()) nextQuoteNum = mSnap.data().nextQuoteNum || nextQuoteNum;
+
+    // Sync local cache
+    localStorage.setItem('quotes',       JSON.stringify(quotes));
+    localStorage.setItem('clients',      JSON.stringify(clients));
+    localStorage.setItem('products',     JSON.stringify(products));
+    localStorage.setItem('nextQuoteNum', String(nextQuoteNum));
+
+    setSyncStatus('ok');
+    renderQuotesList();
+    renderClients();
+  } catch(e) {
+    console.error('Firebase load error:', e);
+    setSyncStatus('offline');
+  }
+}
+
+// ── Real-time listener: update this device if another device saves ──
+window.initFirebaseListeners = function() {
+  if (!window._db) return;
+  const db = window._db;
+  const docFn = window._fbDoc;
+  const snapFn = window._fbOnSnapshot;
+
+  // Listen to quotes changes
+  const unsub = snapFn(docFn(db, 'app', 'quotes'), (snap) => {
+    if (!snap.exists()) return;
+    const fresh = JSON.parse(snap.data().data || '[]');
+    // Only update if different (avoid loop from our own saves)
+    if (JSON.stringify(fresh) !== JSON.stringify(quotes)) {
+      quotes = fresh;
+      localStorage.setItem('quotes', JSON.stringify(quotes));
+      renderQuotesList();
+      setSyncStatus('ok');
+    }
+  });
+  syncListeners.push(unsub);
+};
+
+
+// ============================================================
+// UTILS
+// ============================================================
+function fmt(n) {
+  return '$' + Number(n).toLocaleString('es-AR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function today() {
+  const d = new Date();
+  return d.toLocaleDateString('es-AR', {day:'2-digit', month:'2-digit', year:'numeric'});
+}
+
+function padNum(n) {
+  return String(n).padStart(6, '0');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('nav-' + name)?.classList.add('active');
+  document.getElementById('bottomNav').style.display = 'flex';
+  if (name === 'home') renderQuotesList();
+  if (name === 'clients') renderClients();
+  if (name === 'prices') renderPriceList();
+}
+
+// ============================================================
+// QUOTES LIST
+// ============================================================
+const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+function clearHomeSearch() {
+  document.getElementById('homeSearch').value = '';
+  document.getElementById('homeSearchClear').style.display = 'none';
+  renderQuotesList();
+}
+
+function parseDateParts(dateStr) {
+  // Format: DD/MM/YYYY
+  const parts = (dateStr || '').split('/');
+  if (parts.length === 3) return { day: parts[0], month: parseInt(parts[1]), year: parseInt(parts[2]) };
+  return { day: '01', month: 1, year: 2025 };
+}
+
+function renderQuotesList() {
+  const el = document.getElementById('quotesList');
+  const searchEl = document.getElementById('homeSearch');
+  const clearEl = document.getElementById('homeSearchClear');
+  const q = (searchEl?.value || '').toLowerCase().trim();
+
+  if (clearEl) clearEl.style.display = q ? 'block' : 'none';
+
+  if (!quotes.length) {
+    el.innerHTML = '<div class="empty-state"><div class="big">📋</div><p>Todavía no hay presupuestos.<br>¡Creá el primero!</p></div>';
+    return;
+  }
+
+  let sorted = [...quotes].sort((a,b) => b.id - a.id);
+
+  // Filter by search
+  if (q) {
+    sorted = sorted.filter(qt =>
+      (qt.clientName || '').toLowerCase().includes(q) ||
+      (qt.clientAddr || '').toLowerCase().includes(q) ||
+      (qt.number || '').includes(q) ||
+      (qt.date || '').includes(q)
+    );
+    if (!sorted.length) {
+      el.innerHTML = '<div class="empty-state"><div class="big">🔍</div><p>Sin resultados para "<strong>' + escHtml(q) + '</strong>"</p></div>';
+      return;
+    }
+    // Show flat list when searching
+    el.innerHTML = `<div style="color:var(--muted);font-size:12px;margin-bottom:8px;padding:0 2px">${sorted.length} resultado${sorted.length !== 1 ? 's' : ''}</div>` +
+      sorted.map(qt => quoteItemHTML(qt)).join('');
+    return;
+  }
+
+  // Group by year → month
+  const grouped = {};
+  sorted.forEach(qt => {
+    const { month, year } = parseDateParts(qt.date);
+    if (!grouped[year]) grouped[year] = {};
+    if (!grouped[year][month]) grouped[year][month] = [];
+    grouped[year][month].push(qt);
+  });
+
+  const years = Object.keys(grouped).sort((a,b) => b - a);
+  let html = '';
+
+  years.forEach(year => {
+    const months = Object.keys(grouped[year]).sort((a,b) => b - a);
+    const yearTotal = Object.values(grouped[year]).flat().reduce((s, qt) => s + (qt.total || 0), 0);
+    const yearCount = Object.values(grouped[year]).flat().length;
+
+    html += `
+      <div class="year-group">
+        <div class="year-header" onclick="toggleYear('year-${year}')">
+          <div>
+            <span class="year-label">${year}</span>
+            <span class="year-count">${yearCount} presupuesto${yearCount !== 1 ? 's' : ''}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="year-total">${fmt(yearTotal)}</span>
+            <span class="toggle-icon" id="icon-year-${year}">▾</span>
+          </div>
+        </div>
+        <div class="year-body" id="year-${year}">
+    `;
+
+    months.forEach(month => {
+      const items = grouped[year][month];
+      const monthTotal = items.reduce((s, qt) => s + (qt.total || 0), 0);
+      const monthKey = `month-${year}-${month}`;
+
+      html += `
+        <div class="month-group">
+          <div class="month-header" onclick="toggleYear('${monthKey}')">
+            <div>
+              <span class="month-label">${MESES[parseInt(month) - 1]}</span>
+              <span class="year-count">${items.length} presupuesto${items.length !== 1 ? 's' : ''}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="month-total">${fmt(monthTotal)}</span>
+              <span class="toggle-icon" id="icon-${monthKey}">▾</span>
+            </div>
+          </div>
+          <div class="month-body" id="${monthKey}">
+            ${items.map(qt => quoteItemHTML(qt)).join('')}
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div></div>`;
+  });
+
+  el.innerHTML = html;
+}
+
+function quoteItemHTML(q) {
+  return `
+    <div class="quote-item" onclick="editQuote('${q.id}')">
+      <div class="quote-num">N°${q.number}</div>
+      <div class="quote-info">
+        <div class="quote-client">${escHtml(q.clientName || '(Sin cliente)')}</div>
+        <div class="quote-meta">${q.date}${q.clientAddr ? ' · ' + escHtml(q.clientAddr) : ''}</div>
+      </div>
+      <div class="quote-total">${fmt(q.total)}</div>
+    </div>
+  `;
+}
+
+function toggleYear(id) {
+  const body = document.getElementById(id);
+  if (!body) return;
+  const icon = document.getElementById('icon-' + id);
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  if (icon) icon.textContent = isOpen ? '▸' : '▾';
+}
+
+// ============================================================
+// NEW QUOTE
+// ============================================================
+function newQuote() {
+  currentQuoteId = null;
+  currentQuote = {
+    id: Date.now(),
+    number: padNum(nextQuoteNum),
+    date: today(),
+    clientName: '',
+    clientAddr: '',
+    items: [],
+    discount: 0,
+    observations: '',
+    total: 0
+  };
+  openEditor();
+}
+
+function editQuote(id) {
+  const q = quotes.find(q => q.id == id);
+  if (!q) return;
+  currentQuoteId = id;
+  currentQuote = JSON.parse(JSON.stringify(q));
+  openEditor();
+}
+
+function openEditor() {
+  document.getElementById('quoteNumber').value = currentQuote.number;
+  document.getElementById('quoteDate').textContent = currentQuote.date;
+  document.getElementById('clientName').value = currentQuote.clientName || '';
+  document.getElementById('clientAddr').value = currentQuote.clientAddr || '';
+  document.getElementById('discountPct').value = currentQuote.discount || 0;
+  document.getElementById('quoteObs').value = currentQuote.observations || '';
+  document.getElementById('productSearch').value = '';
+  document.getElementById('searchResults').classList.remove('show');
+  document.getElementById('clientSuggestions').classList.remove('show');
+  document.getElementById('deleteQuoteBtn').style.display = currentQuoteId ? 'flex' : 'none';
+  document.getElementById('editor-subtitle').textContent = 'N° ' + currentQuote.number;
+  renderItems();
+  updateSummary();
+  document.getElementById('bottomNav').style.display = 'none';
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-editor').classList.add('active');
+}
+
+function saveAndGoHome() {
+  currentQuote.number = document.getElementById('quoteNumber').value.trim() || currentQuote.number;
+  currentQuote.clientName = document.getElementById('clientName').value.trim();
+  currentQuote.clientAddr = document.getElementById('clientAddr').value.trim();
+  currentQuote.discount = parseFloat(document.getElementById('discountPct').value) || 0;
+  currentQuote.observations = document.getElementById('quoteObs').value.trim();
+
+  // Update total
+  const sub = currentQuote.items.reduce((s, i) => s + i.qty * i.price, 0);
+  const disc = sub * (currentQuote.discount / 100);
+  currentQuote.total = sub - disc;
+
+  if (currentQuoteId) {
+    const idx = quotes.findIndex(q => q.id == currentQuoteId);
+    if (idx >= 0) quotes[idx] = currentQuote;
+  } else {
+    quotes.push(currentQuote);
+    nextQuoteNum++;
+  }
+
+  // Auto-save client
+  if (currentQuote.clientName) {
+    const exists = clients.find(c => c.name.toLowerCase() === currentQuote.clientName.toLowerCase());
+    if (!exists) {
+      clients.push({ id: Date.now(), name: currentQuote.clientName, addr: currentQuote.clientAddr });
+    }
+  }
+
+  save();
+  showToast('✓ Guardado');
+  showScreen('home');
+}
+
+function deleteCurrentQuote() {
+  if (!currentQuoteId) return;
+  if (!confirm('¿Eliminar este presupuesto?')) return;
+  quotes = quotes.filter(q => q.id != currentQuoteId);
+  save();
+  showToast('🗑 Eliminado');
+  showScreen('home');
+}
+
+// ============================================================
+// ITEMS
+// ============================================================
+function renderItems() {
+  const el = document.getElementById('itemsList');
+  if (!currentQuote.items.length) {
+    el.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:20px 0">Buscá un producto arriba para agregarlo</div>';
+    return;
+  }
+  el.innerHTML = currentQuote.items.map((item, i) => `
+    <div class="item-row" id="item-${i}">
+      <input class="item-name editable" value="${escHtml(item.name)}" oninput="updateItemName(${i}, this.value)" >
+      <button class="delete-item" onclick="removeItem(${i})">✕</button>
+      <div class="item-controls">
+        <button class="qty-btn" onclick="changeQty(${i}, -1)">−</button>
+        <input class="qty-display" type="number" value="${item.qty}" min="1" onchange="changeQtyDirect(${i}, this.value)">
+        <button class="qty-btn" onclick="changeQty(${i}, 1)">＋</button>
+        <div class="item-price-area">
+          <div class="price-label">Precio unit.</div>
+          <input class="item-price-input" type="number" value="${item.price}" oninput="updateItemPrice(${i}, this.value)">
+        </div>
+        <div class="item-total">${fmt(item.qty * item.price)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function escHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function addItem(name, price) {
+  currentQuote.items.push({ name, price: parseFloat(price) || 0, qty: 1 });
+  document.getElementById('productSearch').value = '';
+  document.getElementById('searchResults').classList.remove('show');
+  renderItems();
+  updateSummary();
+  showToast('✓ ' + name.split(' ').slice(0,3).join(' '));
+}
+
+function addManualProduct() {
+  currentQuote.items.push({ name: 'Producto manual', price: 0, qty: 1 });
+  renderItems();
+  updateSummary();
+  // Focus on name of last item
+  setTimeout(() => {
+    const inputs = document.querySelectorAll('.item-name.editable');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  }, 50);
+}
+
+function removeItem(i) {
+  currentQuote.items.splice(i, 1);
+  renderItems();
+  updateSummary();
+}
+
+function changeQty(i, delta) {
+  currentQuote.items[i].qty = Math.max(1, currentQuote.items[i].qty + delta);
+  renderItems();
+  updateSummary();
+}
+
+function changeQtyDirect(i, val) {
+  currentQuote.items[i].qty = Math.max(1, parseInt(val) || 1);
+  updateSummary();
+}
+
+function updateItemPrice(i, val) {
+  currentQuote.items[i].price = parseFloat(val) || 0;
+  // Update total display inline
+  const row = document.getElementById('item-' + i);
+  if (row) {
+    const totEl = row.querySelector('.item-total');
+    if (totEl) totEl.textContent = fmt(currentQuote.items[i].qty * currentQuote.items[i].price);
+  }
+  updateSummary();
+}
+
+function updateItemName(i, val) {
+  currentQuote.items[i].name = val;
+}
+
+// ============================================================
+// SUMMARY
+// ============================================================
+function updateSummary() {
+  const sub = currentQuote.items.reduce((s, i) => s + i.qty * i.price, 0);
+  const pct = parseFloat(document.getElementById('discountPct').value) || 0;
+  const disc = sub * (pct / 100);
+  const total = sub - disc;
+  document.getElementById('summarySubtotal').textContent = fmt(sub);
+  document.getElementById('summaryDiscount').textContent = pct > 0 ? '-' + fmt(disc) : '-$0,00';
+  document.getElementById('summaryTotal').textContent = fmt(total);
+  currentQuote.discount = pct;
+}
+
+// ============================================================
+// PRODUCT SEARCH
+// ============================================================
+function searchProducts() {
+  const q = document.getElementById('productSearch').value.trim().toUpperCase();
+  const res = document.getElementById('searchResults');
+  if (!q) { res.classList.remove('show'); return; }
+  const words = q.split(/\s+/);
+  const matches = products.filter(p => words.every(w => p.producto.includes(w))).slice(0, 30);
+  if (!matches.length) { res.classList.remove('show'); return; }
+  res.innerHTML = matches.map(p => `
+    <div class="result-item" onclick="addItem('${escHtml(p.producto)}', ${p.precio})">
+      <span class="result-name">${p.producto}</span>
+      <span class="result-price">${fmt(p.precio)}</span>
+    </div>
+  `).join('');
+  res.classList.add('show');
+}
+
+// Close search on outside click
+document.addEventListener('click', e => {
+  if (!document.getElementById('searchContainer')?.contains(e.target)) {
+    document.getElementById('searchResults')?.classList.remove('show');
+  }
+  if (!document.getElementById('clientName')?.parentElement?.contains(e.target)) {
+    document.getElementById('clientSuggestions')?.classList.remove('show');
+  }
+});
+
+// ============================================================
+// CLIENT AUTOCOMPLETE
+// ============================================================
+function filterClients() {
+  const q = document.getElementById('clientName').value.trim().toLowerCase();
+  const sug = document.getElementById('clientSuggestions');
+  if (!q) { sug.classList.remove('show'); return; }
+  const matches = clients.filter(c => c.name.toLowerCase().includes(q)).slice(0, 8);
+  if (!matches.length) { sug.classList.remove('show'); return; }
+  sug.innerHTML = matches.map(c => `
+    <div class="client-sug-item" onclick="selectClient('${escHtml(c.name)}','${escHtml(c.addr||'')}')">
+      ${c.name}
+      ${c.addr ? `<div class="sug-addr">${c.addr}</div>` : ''}
+    </div>
+  `).join('');
+  sug.classList.add('show');
+}
+
+function selectClient(name, addr) {
+  document.getElementById('clientName').value = name;
+  document.getElementById('clientAddr').value = addr;
+  document.getElementById('clientSuggestions').classList.remove('show');
+}
+
+// ============================================================
+// CLIENTS SCREEN
+// ============================================================
+function renderClients() {
+  const q = (document.getElementById('clientSearch')?.value || '').toLowerCase();
+  const el = document.getElementById('clientsList');
+  const list = clients.filter(c => !q || c.name.toLowerCase().includes(q));
+  if (!list.length) {
+    el.innerHTML = '<div class="empty-state"><div class="big">👤</div><p>No hay clientes guardados</p></div>';
+    return;
+  }
+  el.innerHTML = list.map(c => `
+    <div class="client-card">
+      <div class="client-avatar">${c.name[0].toUpperCase()}</div>
+      <div class="client-info">
+        <div class="client-name">${c.name}</div>
+        ${c.addr ? `<div class="client-addr">📍 ${c.addr}</div>` : ''}
+      </div>
+      <button class="client-del" onclick="deleteClient(${c.id})">🗑</button>
+    </div>
+  `).join('');
+}
+
+function showAddClientModal() {
+  document.getElementById('newClientName').value = '';
+  document.getElementById('newClientAddr').value = '';
+  openModal('addClientModal');
+}
+
+function saveNewClient() {
+  const name = document.getElementById('newClientName').value.trim();
+  if (!name) { showToast('⚠ Ingresá un nombre'); return; }
+  const addr = document.getElementById('newClientAddr').value.trim();
+  clients.push({ id: Date.now(), name, addr });
+  save();
+  closeModal('addClientModal');
+  renderClients();
+  showToast('✓ Cliente guardado');
+}
+
+function deleteClient(id) {
+  if (!confirm('¿Eliminar este cliente?')) return;
+  clients = clients.filter(c => c.id !== id);
+  save();
+  renderClients();
+}
+
+// ============================================================
+// PRICE LIST SCREEN
+// ============================================================
+function renderPriceList() {
+  const q = (document.getElementById('priceSearch')?.value || '').toUpperCase();
+  const el = document.getElementById('priceList');
+  const list = q ? products.filter(p => p.producto.includes(q)) : products;
+  const visible = list.slice(0, 100);
+  el.innerHTML = `<div style="color:var(--muted);font-size:12px;margin-bottom:8px">${products.length} productos · Los cambios se guardan al salir del campo</div>` +
+    visible.map((p, i) => {
+      const realIdx = products.indexOf(p);
+      return `<div class="price-item">
+        <span class="price-item-name">${p.producto}</span>
+        <input class="price-item-price" type="number" value="${p.precio}" data-idx="${realIdx}" onchange="updateProductPrice(${realIdx}, this.value)" onblur="updateProductPrice(${realIdx}, this.value)">
+      </div>`;
+    }).join('') + (list.length > 100 ? `<div style="text-align:center;color:var(--muted);font-size:12px;padding:10px">Mostrando primeros 100. Buscá para filtrar.</div>` : '');
+}
+
+function updateProductPrice(idx, val) {
+  products[idx].precio = parseFloat(val) || 0;
+  save();
+}
+
+// ============================================================
+// XLSX UPLOAD
+// ============================================================
+function showUploadModal() { openModal('uploadModal'); }
+
+function handleXlsxUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'array' });
+      // Try 'PRODUCTOS' sheet first, then first sheet
+      const sheetName = wb.SheetNames.includes('PRODUCTOS') ? 'PRODUCTOS' : wb.SheetNames[0];
+      const sheet = wb.Sheets[sheetName];
+      const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+      const newProducts = [];
+      for (const row of rows) {
+        const name = String(row[0] || '').trim().toUpperCase();
+        const price = parseFloat(row[1]);
+        if (name && !isNaN(price) && price > 0 && name !== 'PRODUCTO') {
+          newProducts.push({ producto: name, precio: Math.round(price * 100) / 100 });
+        }
+      }
+      if (newProducts.length > 0) {
+        products = newProducts;
+        save();
+        document.getElementById('uploadStatus').style.display = 'block';
+        document.getElementById('uploadStatus').textContent = `✓ ${newProducts.length} productos cargados desde "${sheetName}"`;
+        renderPriceList();
+        showToast(`✓ ${newProducts.length} productos actualizados`);
+      } else {
+        document.getElementById('uploadStatus').style.display = 'block';
+        document.getElementById('uploadStatus').style.color = 'var(--danger)';
+        document.getElementById('uploadStatus').textContent = '⚠ No se encontraron productos. Verificá que la hoja tenga PRODUCTO en col A y PRECIO en col B.';
+      }
+    } catch(err) {
+      document.getElementById('uploadStatus').style.display = 'block';
+      document.getElementById('uploadStatus').style.color = 'var(--danger)';
+      document.getElementById('uploadStatus').textContent = '⚠ Error al leer el archivo: ' + err.message;
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ============================================================
+// MODALS
+// ============================================================
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show'); });
+});
+
+// ============================================================
+// PDF GENERATION (jsPDF)
+// ============================================================
+function printQuote() {
+  const q = currentQuote;
+  q.clientName = document.getElementById('clientName').value.trim();
+  q.clientAddr = document.getElementById('clientAddr').value.trim();
+  q.discount = parseFloat(document.getElementById('discountPct').value) || 0;
+  q.observations = document.getElementById('quoteObs').value.trim();
+  q.number = document.getElementById('quoteNumber').value.trim();
+
+  if (typeof window.jspdf === 'undefined') {
+    showToast('⏳ Cargando librería PDF...');
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    script.onload = () => generatePDF(q);
+    script.onerror = () => showToast('⚠ Sin conexión para generar PDF');
+    document.head.appendChild(script);
+  } else {
+    generatePDF(q);
+  }
+}
+
+function fmtPDF(n) {
+  return '$' + Number(n).toLocaleString('es-AR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function generatePDF(q) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+
+  const W = 210, ml = 15, mr = 15, cw = W - ml - mr;
+  let y = 18;
+
+  // ── Header bar ──
+  doc.setFillColor(26, 26, 26);
+  doc.rect(0, 0, W, 30, 'F');
+
+  // Logo SVG drawn as shapes
+  const lx = ml, ly = 4, lr = 11;
+  // Circle
+  doc.setFillColor(58, 58, 58);
+  doc.circle(lx + lr, ly + lr, lr, 'F');
+  // Roof
+  doc.setDrawColor(232, 115, 42);
+  doc.setLineWidth(1.4);
+  doc.setLineCap('round');
+  doc.setLineJoin('round');
+  doc.lines([[7, -5], [7, 5]], lx + lr - 7, ly + lr + 1, [1,1], 'S');
+  doc.triangle(lx + lr - 7, ly + lr + 1, lx + lr + 7, ly + lr + 1, lx + lr, ly + lr - 5, 'S');
+  // Walls
+  doc.line(lx + lr - 5.5, ly + lr + 0.5, lx + lr - 5.5, ly + lr + 5.5);
+  doc.line(lx + lr + 5.5, ly + lr + 0.5, lx + lr + 5.5, ly + lr + 5.5);
+
+  // Company name
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(15);
+  doc.setFont('helvetica', 'bold');
+  doc.text('CASA DON', ml + 26, 11);
+  doc.setTextColor(232, 115, 42);
+  doc.text('PINTO', ml + 26, 19);
+  doc.setFontSize(7);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(160, 160, 160);
+  doc.text('Distribuidora de Pintura · Lista LP 270', ml + 26, 25);
+
+  // ── Presupuesto number & date (right) ──
+  doc.setTextColor(232, 115, 42);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.text('PRESUPUESTO N\u00B0 ' + q.number, W - mr, 11, { align: 'right' });
+  doc.setTextColor(200, 200, 200);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Fecha: ' + q.date, W - mr, 18, { align: 'right' });
+
+  y = 38;
+
+  // ── Client box ──
+  if (q.clientName) {
+    doc.setFillColor(245, 245, 245);
+    doc.setDrawColor(232, 115, 42);
+    doc.setLineWidth(0.5);
+    doc.rect(ml, y - 5, cw, q.clientAddr ? 14 : 10, 'FD');
+    doc.setFillColor(232, 115, 42);
+    doc.rect(ml, y - 5, 3, q.clientAddr ? 14 : 10, 'F');
+    doc.setTextColor(0);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Cliente: ' + q.clientName, ml + 6, y + 1);
+    if (q.clientAddr) {
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(80);
+      doc.text(q.clientAddr, ml + 6, y + 7);
+    }
+    y += q.clientAddr ? 20 : 16;
+  }
+
+  // ── Table header ──
+  const colX = [ml, ml + 18, ml + 18 + 92, ml + 18 + 92 + 32];
+  const colW = [18, 92, 32, cw - 18 - 92 - 32];
+
+  doc.setFillColor(26, 26, 26);
+  doc.rect(ml, y, cw, 8, 'F');
+  doc.setTextColor(255);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'bold');
+  const headers = ['CANT.', 'PRODUCTO', 'UNITARIO', 'TOTAL'];
+  const aligns = ['center', 'left', 'right', 'right'];
+  headers.forEach((h, i) => {
+    const xCenter = colX[i] + colW[i] / 2;
+    const xRight = colX[i] + colW[i] - 2;
+    const xLeft = colX[i] + 2;
+    if (aligns[i] === 'center') doc.text(h, xCenter, y + 5.5, { align: 'center' });
+    else if (aligns[i] === 'right') doc.text(h, xRight, y + 5.5, { align: 'right' });
+    else doc.text(h, xLeft, y + 5.5);
+  });
+  y += 8;
+
+  // ── Table rows ──
+  doc.setFont('helvetica', 'normal');
+  q.items.forEach((item, idx) => {
+    const rowH = 7;
+    if (y + rowH > 270) {
+      doc.addPage();
+      y = 15;
+    }
+    if (idx % 2 === 0) {
+      doc.setFillColor(250, 250, 250);
+      doc.rect(ml, y, cw, rowH, 'F');
+    }
+    doc.setDrawColor(220);
+    doc.setLineWidth(0.2);
+    doc.line(ml, y + rowH, ml + cw, y + rowH);
+
+    doc.setTextColor(0);
+    doc.setFontSize(8);
+
+    // qty
+    doc.text(String(item.qty), colX[0] + colW[0] / 2, y + 4.8, { align: 'center' });
+    // name (truncate if needed)
+    const maxNameW = colW[1] - 4;
+    let name = item.name;
+    while (doc.getTextWidth(name) > maxNameW && name.length > 5) name = name.slice(0, -2);
+    if (name !== item.name) name = name.slice(0, -1) + '…';
+    doc.text(name, colX[1] + 2, y + 4.8);
+    // unit price
+    doc.text(fmtPDF(item.price), colX[2] + colW[2] - 2, y + 4.8, { align: 'right' });
+    // total
+    doc.setFont('helvetica', 'bold');
+    doc.text(fmtPDF(item.qty * item.price), colX[3] + colW[3] - 2, y + 4.8, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    y += rowH;
+  });
+
+  y += 4;
+
+  // ── Totals box ──
+  const sub = q.items.reduce((s, i) => s + i.qty * i.price, 0);
+  const disc = sub * (q.discount / 100);
+  const total = sub - disc;
+
+  const totX = W - mr - 70;
+  let ty = y;
+
+  doc.setFillColor(245, 245, 245);
+  doc.rect(totX, ty, 70, q.discount > 0 ? 22 : 15, 'F');
+
+  doc.setFontSize(8);
+  doc.setTextColor(80);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Subtotal:', totX + 3, ty + 6);
+  doc.setTextColor(0);
+  doc.text(fmtPDF(sub), totX + 67, ty + 6, { align: 'right' });
+
+  if (q.discount > 0) {
+    doc.setTextColor(80);
+    doc.text('Descuento ' + q.discount + '%:', totX + 3, ty + 12);
+    doc.setTextColor(200, 60, 60);
+    doc.text('-' + fmtPDF(disc), totX + 67, ty + 12, { align: 'right' });
+    ty += 6;
+  }
+
+  doc.setDrawColor(26, 26, 26);
+  doc.setLineWidth(0.5);
+  doc.line(totX + 2, ty + 9, totX + 68, ty + 9);
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(0);
+  doc.text('TOTAL:', totX + 3, ty + 15);
+  doc.setTextColor(232, 115, 42);
+  doc.text(fmtPDF(total), totX + 67, ty + 15, { align: 'right' });
+
+  y = ty + (q.discount > 0 ? 28 : 22);
+
+  // ── Observations ──
+  if (q.observations) {
+    doc.setFontSize(8);
+    doc.setTextColor(80);
+    doc.setFont('helvetica', 'normal');
+    doc.setFillColor(252, 252, 240);
+    doc.rect(ml, y, cw, 12, 'F');
+    doc.setDrawColor(232, 115, 42);
+    doc.rect(ml, y, 2, 12, 'F');
+    doc.setTextColor(0);
+    doc.text('Observaciones: ' + q.observations, ml + 5, y + 5, { maxWidth: cw - 8 });
+    y += 16;
+  }
+
+  // ── Footer ──
+  doc.setFontSize(7);
+  doc.setTextColor(150);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Presupuesto valido sujeto a variaciones de precio · Gracias por su confianza', W / 2, 288, { align: 'center' });
+
+  // ── Save ──
+  doc.save('Presupuesto-' + q.number + '-' + (q.clientName || 'cliente').replace(/\s+/g, '_') + '.pdf');
+  showToast('✓ PDF descargado');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadState().then(() => {
+  renderQuotesList();
+});
+
+</script>
+
+</body>
+</html>
